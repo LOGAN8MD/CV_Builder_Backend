@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import cvRoutes from "./routes/cvRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js"; 
+
 
 
 dotenv.config();
