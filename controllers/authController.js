@@ -1,6 +1,10 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const register = async (req, res) => {
   try {
@@ -55,3 +59,47 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
+
+// Google Login
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { tokenId } = req.body;
+
+      const ticket = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.GOOGLE_CLIENT_ID, // Ensure token is for your app
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId } = payload;
+
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // User exists, link googleId if not set
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await user.save();
+      }
+    } else {
+      // Create new user
+      user = await User.create({
+        username: name,
+        email,
+        googleId,
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2d",
+    });
+
+    res.json({ token, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Google login failed" });
+  }
+};
+

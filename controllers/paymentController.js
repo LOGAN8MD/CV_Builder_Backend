@@ -2,10 +2,10 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
-// Create a new order
+
 export const createOrder = async (req, res) => {
   try {
-    // Initialize Razorpay instance here (after dotenv has loaded)
+    
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// Verify payment signature
+// Verify payment 
 export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -37,11 +37,11 @@ export const verifyPayment = async (req, res) => {
     const generatedSignature = hmac.digest("hex");
 
     if (generatedSignature === razorpay_signature) {
-      // ✅ Payment verified
+      
       res.status(200).json({ status: "success", message: "Payment verified successfully" });
     } else {
       console.log( "Failure :----- Payment verification failed")
-      // ❌ Payment failed
+      
       res.status(400).json({ status: "failure", message: "Payment verification failed" });
     }
   } catch (error) {

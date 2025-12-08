@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     contact: { type: String },
     password: { type: String },
     googleId: { type: String },
+    facebookId: { type: String },
   },
   { timestamps: true }
 );
